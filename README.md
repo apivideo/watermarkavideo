@@ -1,3 +1,9 @@
+# watermarkavideo
+
+A fork of record a video (description below)
+
+The additional usage allows you ato add a watermark either on the frontend (by adding to the canvas) or backend (added to the video by FFMOEG).
+
 # recordavideo
 
 ## record a video
