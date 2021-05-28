@@ -1,11 +1,12 @@
-RTMP_url = 'rtmp://broadcast.api.video/s/30087931-229e-42cf-b5f9-e91bcc1f7332';
+RTMP_url = 'rtmp://broadcast.api.video/s/4f915f5a-f0cf-46ae-887a-af32d4489794';
+live_url = 'https://embed.api.video/live/li2pgnL0gyRV3Uxhd0bPFcv0';
 var watermark_url;
 var FE_watermark_url;
 var BE_watermark_url;
 var watermarkImg;
 var onepixel_watermarkUrl = "http://localhost:3036/1x1.png";
 var canvasWatermark;
-live_url = 'https://embed.api.video/live/li400mYKSgQ6xs7taUeSaEKr';
+
 delegated_token = 'to1YSecZMRjrvDGxSfVFTNhG';
 //page defaults
 //vod by default, but we can make the page default to live.
