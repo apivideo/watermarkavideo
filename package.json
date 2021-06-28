@@ -15,5 +15,8 @@
     "https": "^1.0.0",
     "nodemon": "^2.0.7",
     "socket.io": "^4.0.0"
+  },
+  "devDependencies": {
+    "bump-cli": "^2.0.1"
   }
 }
