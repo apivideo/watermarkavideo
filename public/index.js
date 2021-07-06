@@ -4,10 +4,10 @@ var watermark_url;
 var FE_watermark_url;
 var BE_watermark_url;
 var watermarkImg;
-var onepixel_watermarkUrl = "http://localhost:3036/1x1.png";
+var onepixel_watermarkUrl = "1x1.png";
 var canvasWatermark;
 
-delegated_token = 'to1YSecZMRjrvDGxSfVFTNhG';
+delegated_token = 'to5zwHPfImr08UM4qa3NKwpN';
 //page defaults
 //vod by default, but we can make the page default to live.
 live = false; 
