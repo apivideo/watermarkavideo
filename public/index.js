@@ -15,6 +15,24 @@ live = false;
 cameraOnly = false;
 
 window.onload  = function(){
+    navigator.getUserMedia = (navigator.mediaDevices.getUserMedia ||
+        navigator.mediaDevices.mozGetUserMedia ||
+        navigator.mediaDevices.msGetUserMedia ||
+        navigator.mediaDevices.webkitGetUserMedia);
+    navigator.getUserMedia({audio:true,video:true}, function(stream) {
+        stream.getTracks().forEach(x=>x.stop());
+        getCamAndMics();
+      }, err=>console.log(err));
+
+      if( 'permissions' in navigator){
+          //not supported by safari...
+        navigator.permissions.query({name:'camera'}).then(function(permissionStatus) {
+            permissionStatus.onchange = function() {
+            console.log('geolocation permission state has changed to ', this.state);
+            getCamAndMics();
+            };
+        });
+    }
     console.log("loaded");
     // is this a mobile device - no screen share - and 2 cameras?
     //see if screen capture is supported
