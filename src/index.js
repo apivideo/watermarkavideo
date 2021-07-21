@@ -9,7 +9,7 @@ var spawn = require('child_process').spawn;
 var port = 3036;
 
 
-app.get('/', function(req, res,next) {  
+app.get('/', function(req, res) {  
     res.sendFile(__dirname + '/index1.html');
 });
 
