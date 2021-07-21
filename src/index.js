@@ -6,7 +6,7 @@ app.use(express.static('public'));
 
 var io = require('socket.io')(server);
 var spawn = require('child_process').spawn;
-var port =3036;
+var port =process.env.PORT || 3036;
 
 
 app.get('/', function(req, res,next) {  
