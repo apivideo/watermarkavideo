@@ -6,7 +6,7 @@ app.use(express.static('public'));
 
 var io = require('socket.io')(server);
 var spawn = require('child_process').spawn;
-var port =process.env.PORT || 3036;
+var port = 3036;
 
 
 app.get('/', function(req, res,next) {  
@@ -166,6 +166,6 @@ io.on('error',function(e){
 	console.log('socket.io error:'+e);
 });
 
-server.listen(port, () =>
+server.listen(process.env.PORT || port, () =>
   console.log('Example app listening on port '+port+'!'),
 );
