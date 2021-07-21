@@ -15,24 +15,34 @@ live = false;
 cameraOnly = false;
 
 window.onload  = function(){
-    navigator.getUserMedia = (navigator.mediaDevices.getUserMedia ||
-        navigator.mediaDevices.mozGetUserMedia ||
-        navigator.mediaDevices.msGetUserMedia ||
-        navigator.mediaDevices.webkitGetUserMedia);
-    navigator.getUserMedia({audio:true,video:true}, function(stream) {
-        stream.getTracks().forEach(x=>x.stop());
-        getCamAndMics();
-      }, err=>console.log(err));
+  //this turns on the camera for a second - just to get permissions to populate the form with mics and cameras
+        //navigator.getUserMedia = (navigator.mediaDevices.getUserMedia);
+        
+        if('getUserMedia' in navigator){
+            //chrome
+            navigator.getUserMedia({audio:true,video:true}, function(stream) {
+                stream.getTracks().forEach(x=>x.stop());
+                getCamAndMics();
+            }, err=>console.log(err));
+        }else if('getUserMedia' in navigator.mediaDevices){
+            //firefox
+            navigator.mediaDevices.getUserMedia({audio:true,video:true}, function(stream) {
+                stream.getTracks().forEach(x=>x.stop());
+                getCamAndMics();
+            }, err=>console.log(err));
 
-      if( 'permissions' in navigator){
-          //not supported by safari...
-        navigator.permissions.query({name:'camera'}).then(function(permissionStatus) {
-            permissionStatus.onchange = function() {
-            console.log('geolocation permission state has changed to ', this.state);
-            getCamAndMics();
-            };
-        });
-    }
+
+        }
+   
+          if( 'permissions' in navigator){
+              //not supported by safari...
+            navigator.permissions.query({name:'camera'}).then(function(permissionStatus) {
+                permissionStatus.onchange = function() {
+                console.log('geolocation permission state has changed to ', this.state);
+                getCamAndMics();
+                };
+            });
+        }
     console.log("loaded");
     // is this a mobile device - no screen share - and 2 cameras?
     //see if screen capture is supported
