@@ -21,6 +21,8 @@ spawn('ffmpeg',['-h']).on('error',function(m){
 
 
 
+
+
 io.on('connection', function(socket){
 	console.log("connection");
     socket.emit('message','Hello from mediarecorder-to-rtmp server!');
