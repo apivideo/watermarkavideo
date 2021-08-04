@@ -32,7 +32,7 @@ io.on('connection', function(socket){
 	//socket._vcodec='libvpx';//from firefox default encode
  
 	socket.on('config_watermark',function(w){
-			socket._watermarkUrl = w;
+			socket._watermarkUrl = "https://watermark.a.video/" + w;
 			socket.emit('message','watermark set to:'+w);
         	console.log('message','watermark set to:'+w);
 
