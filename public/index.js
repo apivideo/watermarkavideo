@@ -1,5 +1,5 @@
-RTMP_url = 'rtmp://broadcast.api.video/s/4f915f5a-f0cf-46ae-887a-af32d4489794';
-live_url = 'https://embed.api.video/live/li2pgnL0gyRV3Uxhd0bPFcv0';
+RTMP_url = 'rtmp://broadcast.api.video/s/150a4e6c-153f-4f11-869a-0cf689f450f2';
+live_url = 'https://embed.api.video/live/limZa0k7CiqP1JR8SdnWee7';
 var watermark_url;
 var FE_watermark_url;
 var BE_watermark_url;
