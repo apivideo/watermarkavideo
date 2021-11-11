@@ -585,7 +585,7 @@ async function startCapture() {
         console.log("stream tracks", stream.getAudioTracks());        
         
     //JUST START RECORDING
-    startRecording();
+    startRecording(live);
 
     } catch(err) {
         console.error("Error: " + err);
@@ -627,46 +627,43 @@ function stopCapture(evt) {
     }
     if(!live){
         //stop blob recording
-         uploadTheVideo();
+       //  uploadTheVideo();
        // download();
     }
     
 
 }
 
-function startRecording() {
+function startRecording(live) {
     //if I omit the MIMEtype, MediaRecorder works in Safari 14.0.3.  If I add a Mime.... it fails.
     //i had a mimetype in the options and it would not record properly.
     var options = { audioBitsPerSecond: 100000, videoBitsPerSecond: 4000000};
     //var options = 'video/mp4';
     recordedBlobs = [];
     try {
-        mediaRecorder = new MediaRecorder(stream, options);
+        if(live){
+            mediaRecorder = new MediaRecorder(stream, options);
+        }else{
+                //instatiate the apivideo meida recorder upload function
+                console.log("create apivideo media recorder!");
+                mediaRecorder = new ApiVideoMediaRecorder(stream, {
+                    uploadToken: delegated_token
+                });
+        }
         console.log("options", options);
         console.log("mediaRecorder mime", mediaRecorder.mimeType);
-    } catch (e0) {
-        console.log('Unable to create MediaRecorder with options Object: ', options, e0);
-        try {
-        options = {mimeType: 'video/webm;codecs=vp8,opus', bitsPerSecond: 100000};
-        mediaRecorder = new MediaRecorder(stream, options);
-        console.log("options", options);
-        } catch (e1) {
+    } 
+    catch (e2) {
+        alert('MediaRecorder is not supported by this browser.');
         console.log('Unable to create MediaRecorder with options Object: ', options, e1);
-        try {
-            options = 'video/mp4';
-            mediaRecorder = new MediaRecorder(stream, options);
-            console.log("options", options);
-        } catch (e2) {
-            alert('MediaRecorder is not supported by this browser.');
-            console.log('Unable to create MediaRecorder with options Object: ', options, e1);
-            console.error('Exception while creating MediaRecorder:', e2);
-            return;
-        }
-        }
+        console.error('Exception while creating MediaRecorder:', e2);
+        return;
+        
+        
     }
     console.log('Created video MediaRecorder', mediaRecorder, 'with options', options);
     console.log(",ediacrecorder stream info", mediaRecorder.stream);
-    console.log(",ediacrecorder stream trackinfo", mediaRecorder.stream.getTracks());
+  //  console.log(",ediacrecorder stream trackinfo", mediaRecorder.stream.getTracks());
     mediaRecorder.onstop = handleStop;
     if(live){
         console.log("mime", mediaRecorder.mimeType);
@@ -680,45 +677,28 @@ function startRecording() {
           document.getElementById("video-information").innerHTML = "Live Stream available after 20s <a href="+live_url+">here</a>";
     }
 
-    else{
-        //if recording save to blob
-        console.log("saving blob");
-        //mediaRecorder.ondataavailable = handleDataAvailable;
-        mediaRecorder.ondataavailable = function handleDataAvailable(event) {
-            console.log("data-available");
-            if (event.data && event.data.size > 0) {
-                console.log("event.data", event.data);
-                const blobby = new Blob([event.data], {type: mediaRecorder.mimeType});
-                console.log("blobby", blobby);
-                recordedBlobs.push(blobby);
-                console.log(recordedBlobs);
-               console.log("handledataavailable", recordedBlobs.length);
-                }
-            }
- 
-    }
     mediaRecorder.start(10); // collect 10ms of data
     console.log('MediaRecorder started', mediaRecorder);
 }
 
-/*
-function handleDataAvailable(event) {
-    console.log("data-available");
-    if (event.data && event.data.size > 0) {
-        
-        recordedBlobs.push(event.data);
-        console.log(recordedBlobs);
-       console.log("handledataavailable", recordedBlobs.length);
-        }
-}
-*/
+
 function handleStop(event) {
     console.log('Recorder stopped: ', event);
     console.log('Recorded Blobs: ', recordedBlobs);
     }
 
 function stopRecording() {
-    mediaRecorder.stop();
+    document.getElementById("video-information").innerHTML = "Uploading the last bit of the video.  Please wait a second."
+    mediaRecorder.stop()//;
+        .then(function(video) {
+            
+            console.log(video);
+              //the video is fully uploaded. there will now be a url in the response
+              playerUrl = video.assets.player;
+              console.log("all uploaded! Watch here: ",playerUrl ) ;
+              document.getElementById("video-information").innerHTML = "all uploaded! Watch the video <a href=\'" + playerUrl +"\' target=\'_blank\'>here</a>" ;
+        
+        });
   //  recordedVideo.controls = true;
    // download();
 }
@@ -744,98 +724,7 @@ function download() {
     }, 100);
 }
 
-function uploadTheVideo(){
-    var chunkSize=5024000;
 
-    
-    var blob = new Blob(recordedBlobs, {type: 'video/webm'});
-    var file=blob;
-    var numberofChunks = Math.ceil(file.size/chunkSize);
-    var filename = "browserVideo";
-    console.log("file size", blob.size +"  " + file.size);
-    document.getElementById("video-information").innerHTML = "There will be " + numberofChunks + " chunks uploaded."
-    var start =0; 
-    chunkCounter=0;
-    videoId="";
-    var chunkEnd = start + chunkSize;
-    //upload the first chunk to get the videoId
-    createChunk(videoId, start);
-    
-    
-    
-    function createChunk(videoId, start, end){
-        chunkCounter++;
-        console.log("created chunk: ", chunkCounter);
-        chunkEnd = Math.min(start + chunkSize , file.size );
-        const chunk = file.slice(start, chunkEnd);
-        console.log("i created a chunk of video" + start + "-" + chunkEnd + "minus 1	");
-        const chunkForm = new FormData();
-        if(videoId.length >0){
-            //we have a videoId
-            chunkForm.append('videoId', videoId);
-            console.log("added videoId");	
-            
-        }
-        //chunkForm.append('file', chunk);
-        chunkForm.append('file', chunk, filename);
-        console.log("added file");
-
-        
-        //created the chunk, now upload iit
-        uploadChunk(chunkForm, start, chunkEnd);
-    }
-    
-    function uploadChunk(chunkForm, start, chunkEnd){
-        var oReq = new XMLHttpRequest();
-        oReq.upload.addEventListener("progress", updateProgress);	
-        const url ="https://sandbox.api.video/upload?token=" + delegated_token;
-        oReq.open("POST", url, true);
-        var blobEnd = chunkEnd-1;
-        var contentRange = "bytes "+ start+"-"+ blobEnd+"/"+file.size;
-        oReq.setRequestHeader("Content-Range",contentRange);
-        console.log("Content-Range", contentRange);
-        function updateProgress (oEvent) {
-            if (oEvent.lengthComputable) {  
-            var percentComplete = Math.round(oEvent.loaded / oEvent.total * 100);
-            
-            var totalPercentComplete = Math.round((chunkCounter -1)/numberofChunks*100 +percentComplete/numberofChunks);
-            document.getElementById("chunk-information").innerHTML = "Chunk # " + chunkCounter + " is " + percentComplete + "% uploaded. Total uploaded: " + totalPercentComplete +"%";
-        //	console.log (percentComplete);
-            // ...
-        } else {
-            console.log ("not computable");
-            // Unable to compute progress information since the total size is unknown
-        }
-        }
-        oReq.onload = function (oEvent) {
-                    // Uploaded.
-                        console.log("uploaded chunk" );
-                        console.log("oReq.response", oReq.response);
-                        var resp = JSON.parse(oReq.response)
-                        videoId = resp.videoId;
-                        //playerUrl = resp.assets.player;
-                        console.log("videoId",videoId);
-                        
-                        //now we have the video ID - loop through and add the remaining chunks
-                        //we start one chunk in, as we have uploaded the first one.
-                        //next chunk starts at + chunkSize from start
-                        start += chunkSize;	
-                        //if start is smaller than file size - we have more to still upload
-                        if(start<file.size){
-                            //create the new chunk
-                            createChunk(videoId, start);
-                        }
-                        else{
-                            //the video is fully uploaded. there will now be a url in the response
-                            playerUrl = resp.assets.player;
-                            console.log("all uploaded! Watch here: ",playerUrl ) ;
-                            document.getElementById("video-information").innerHTML = "all uploaded! Watch the video <a href=\'" + playerUrl +"\' target=\'_blank\'>here</a>" ;
-                        }
-                        
-        };
-        oReq.send(chunkForm);
-    }
-}
 function connect_server(){
     
     if(!stream){fail('No getUserMedia() available.');}
