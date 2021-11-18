@@ -6,13 +6,17 @@
 
 ![](https://github.com/apivideo/API_OAS_file/blob/master/apivideo_banner.png)
 
-api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
+<h1 align="center">api.video watermark a video</h1>
 
-# watermarkavideo
+[api.video](https://api.video) is the video infrastructure for product builders. Lightning fast video APIs for integrating, scaling, and managing on-demand & low latency live streaming features in your app.
 
 A fork of record a video (description below)
 
-The additional usage allows you ato add a watermark either on the frontend (by adding to the canvas) or backend (added to the video by FFMOEG).
+The additional usage allows you to add a watermark either on the frontend (by adding to the canvas) or backend (added to the video by FFMPEG).
+
+
+## Updated November 2021 
+Progressive upload feature added. This feature allows for video upload while still recording, making the process easier and faster for your users.
 
 # recordavideo
 
